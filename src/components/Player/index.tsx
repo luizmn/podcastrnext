@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
-
 export default function Player() {
     const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -14,7 +13,9 @@ export default function Player() {
         currentEpisodeIndex, 
         isPlaying, 
         togglePlay,
-        setPlayingState 
+        setPlayingState,
+        playNext,
+        playPrevious, 
     } = useContext(PlayerContext);
 
     useEffect(() => {
@@ -89,7 +90,7 @@ return (
                 <button type="button" disabled={!episode}>
                     <img src="/shuffle.svg" alt="Shuffle songs" />
                 </button>
-                <button type="button" disabled={!episode}>
+                <button type="button" onClick={playPrevious} disabled={!episode}>
                     <img src="/play-previous.svg" alt="previous song" />
                 </button>
                 <button 
@@ -101,7 +102,7 @@ return (
                     ? <img src="/pause.svg" alt="pause" />
                     : <img src="/play.svg" alt="play song" />}
                 </button>
-                <button type="button" disabled={!episode}>
+                <button type="button" onClick={playNext} disabled={!episode}>
                     <img src="/play-next.svg" alt="next song" />
                 </button>
                 <button type="button" disabled={!episode}>

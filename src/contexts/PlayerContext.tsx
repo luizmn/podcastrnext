@@ -1,5 +1,4 @@
-import { createContext, useState } from 'react';
-
+import { createContext, useState, ReactNode } from 'react';
 
 type Episode ={
     title: string;
@@ -14,26 +13,38 @@ type PlayerContextData = {
     currentEpisodeIndex: number;
     isPlaying: boolean;
     play: (episode: Episode) => void;
+    playList: (list: Episode[], index: number) => void;
+    setPlayingState: (state: boolean) => void;    
     togglePlay: () => void;
-    setPlayingState: (state: boolean) => void;
-
+    playNext: () => void;
+    playPrevious: () => void;
 };
 
 export const PlayerContext = createContext({} as PlayerContextData);
 
-export function PlayerContextProvider({children})  {
+type PlayerContextProviderProps = {
+    children: ReactNode; //children element now accepts everything from react JSX components
+};
+
+export function PlayerContextProvider({ children }: PlayerContextProviderProps)  {
     
   const [episodeList, setEpisodeList] = useState([]);
   const [currentEpisodeIndex, setCurrentEpisodeIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  function play(episode) {
+  function play(episode: Episode) {
     setEpisodeList([episode]);
     setCurrentEpisodeIndex(0);
     setIsPlaying(true);
   }
 
-  function togglePlay(episode) {
+  function playList(list: Episode[], index: number) {
+    setEpisodeList(list);
+    setCurrentEpisodeIndex(index);
+    setIsPlaying(true);
+  }
+
+  function togglePlay() {
     setIsPlaying(!isPlaying);
   }
 
@@ -41,16 +52,36 @@ export function PlayerContextProvider({children})  {
     setIsPlaying(state);
   }
 
+  function playNext() {
+    const nextEpisodeIndex = (currentEpisodeIndex + 1);
+
+    if (nextEpisodeIndex < episodeList.length) {
+        setCurrentEpisodeIndex(currentEpisodeIndex + 1);
+    }
+  }
+
+  function playPrevious() {
+    // const previousEpisodeIndex = (currentEpisodeIndex - 1);
+
+    if (currentEpisodeIndex > 0) {
+        setCurrentEpisodeIndex(currentEpisodeIndex - 1);
+    }
+      
+  }
+
   return (
     <PlayerContext.Provider 
-    value={{ 
-      episodeList, 
-      currentEpisodeIndex, 
-      play, 
-      isPlaying, 
-      togglePlay,
-      setPlayingState
-    }}>
+        value={{ 
+        episodeList, 
+        currentEpisodeIndex, 
+        play, 
+        playList,
+        playNext,
+        playPrevious,
+        isPlaying, 
+        togglePlay,
+        setPlayingState,
+        }}>
         { children }
     </PlayerContext.Provider>
   )
