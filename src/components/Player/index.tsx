@@ -104,7 +104,7 @@ return (
                     <div className={styles.emptySlider} />
                 )}
             </div>
-            <span>{episode?.durationAsString ?? 0}</span>
+            <span>{convertDurationToTimeString(episode?.duration) ?? 0}</span>
             </div>
 
             {episode && (
