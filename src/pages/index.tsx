@@ -4,11 +4,12 @@ import { GetStaticProps } from 'next';
 import { api } from '../services/api';
 import { convertDurationToTimeString } from '../utils/convertDurationToTimeString';
 import Image from 'next/image';
+import Head from 'next/head';
 import Link from 'next/link';
 import styles from './home.module.scss';
 import Player from '../components/Player';
 import { useContext } from 'react';
-import { PlayerContext } from '../contexts/PlayerContext';
+import { usePlayer } from '../contexts/PlayerContext';
 
 
 type Episode = {
@@ -29,7 +30,7 @@ type HomeProps = {
 }
 
 export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
-  const { playList } = useContext(PlayerContext);
+  const { playList } = usePlayer();
 
   const episodeList = [...latestEpisodes, ...allEpisodes]; 
   //react immutability - create an episode list adding the latestEpisodes and allEpisodes values
@@ -37,6 +38,9 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
   return (
     <>
     <div className={styles.homepage}>
+      <Head>
+        <title> Podcastr Start </title>
+      </Head>
       <section className={styles.latestEpisodes}>
         <h2>Últimos Lançamentos</h2>
         <ul>
@@ -134,6 +138,7 @@ const episodes = data.map(episode => {
     thumbnail: episode.thumbnail,
     members: episode.members,
     publishedAt: format(parseISO(episode.published_at), 'd MMM yy', { locale: ptBR }),
+    duration: (Number(episode.file.duration)),
     durationAsString: convertDurationToTimeString(Number(episode.file.duration)),
     url: episode.file.url,
   };

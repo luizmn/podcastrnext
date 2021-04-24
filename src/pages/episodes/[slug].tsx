@@ -7,6 +7,8 @@ import { api } from '../../services/api';
 import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString';
 import styles from './episode.module.scss';
 import Link from 'next/link';
+import Head from 'next/head';
+import { usePlayer } from '../../contexts/PlayerContext';
 
 type Episode = {
     id: string;
@@ -25,10 +27,14 @@ type EpisodeProps = {
 };
 
 export default function Episode({episode}: EpisodeProps) {
-    const router = useRouter();
+    //const router = useRouter();
+    const { play } = usePlayer();
 
     return (
         <div className={styles.episode}>
+            <Head>
+                <title> Podcastr | {episode?.title} </title>
+            </Head>
             <div className={styles.thumbnailContainer}>
                 <Link href="/">
                     <button>
@@ -43,7 +49,7 @@ export default function Episode({episode}: EpisodeProps) {
                 objectFit="cover"
                 />
                 <button>
-                    <img src="/play.svg" alt="Play" />
+                    <img src="/play.svg" onClick={() => play(episode)} alt="Play" />
                 </button>
             </div>
 
@@ -73,20 +79,21 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     const { data } = await api.get(`episodes/${slug}`)
 
     const episode = {
-          id: data.id,
-          title: data.title,
-          thumbnail: data.thumbnail,
-          members: data.members,
-          publishedAt: format(parseISO(data.published_at), 'd MMM yy', { locale: ptBR }),
-          durationAsString: convertDurationToTimeString(Number(data.file.duration)),
-          description: data.description,
-          url: data.file.url,
+        id: data.id,
+        title: data.title,
+        thumbnail: data.thumbnail,
+        members: data.members,
+        publishedAt: format(parseISO(data.published_at), 'd MMM yy', { locale: ptBR }),
+        duration: Number(data.file.duration),
+        durationAsString: convertDurationToTimeString(Number(data.file.duration)),
+        description: data.description,
+        url: data.file.url,
         };
 
 
     return {
         props: { 
-            episode,
+            episode
         },
         revalidate: 60 * 60 * 48, //Reloads data every 48 hours
     }
